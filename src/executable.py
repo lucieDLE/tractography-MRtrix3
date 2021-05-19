@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
-# global script 
 import os
 import glob
 import argparse
 import subprocess
 import sys
-from scaling import *
 import nibabel as ni
 import re
+
+from iFOD2 import *
+from scaling import *
+from postprocess import *
 
 def main(args):
 	###
@@ -19,14 +21,13 @@ def main(args):
 	fly_by_dir=os.path.join(DATA_DIR, "fly-by-cnn/")
 
 	outlier_dir=os.path.join(DATA_DIR, "msma/")
-	tractography_dir=os.path.join(DATA_DIR, "tractography/")
-
 
 	predict_v2=os.path.join(us_famli_dir, "src/py/dl/predict_v2.py")
 	flyby_script=os.path.join(fly_by_dir, "src/py/fly_by_features.py")
-	tractography_script=os.path.join(tractography_dir, "iFOD2.py" )
+	
+	# tractography_script=os.path.join(tractography_dir, "iFOD2.py" )
 	# predict_ocsvm=os.path.join(outlier_dir, "predict_multiple_classes.py" )
-	predict_score==os.path.join(outlier_dir, "evaluation.py" )   # ??? are train and predict in the same file ? maybe have to change something
+	# predict_score==os.path.join(outlier_dir, "evaluation.py" )   # ??? are train and predict in the same file ? maybe have to change something
 
 	###
 	# Create architecture
@@ -51,7 +52,7 @@ def main(args):
 	else :
 		input_files = args.input[0]
 
-	command = [ "python3", tractography_script,
+	command = [ "python3", "iFOD2.py",
 				"--file_name", input_files,
 				"--bval", args.bval, 
 				"--bvec", args.bvec,
@@ -67,9 +68,7 @@ def main(args):
 	# Fly-by-features 
 	###	
 
-	scaling="/work/lumargot/scripts/test-script/scaling.py"
-
-	command=[ "python3", scaling, "--nii", args.input[0] ]
+	command=[ "python3", "scaling.py", "--nii", args.input[0] ]
 	proc = execute=subprocess.run(command, stdout=subprocess.PIPE)
 
 	out=proc.stdout
@@ -126,12 +125,12 @@ def main(args):
 	###
 	# Outlier detection - predict score 
 	###	
-	prediction_file='/opt/lumargot/spiral_64/MRTRIX/102311/prediction.csv'
-	command = [ "python3", predict_ocsvm, 
-				"--folder_model", args.folder_models, 
-				"--json", args.json, 
-				"--csv", prediction_file,  
-				"--analysis", dir_subject]
+	# prediction_file='/opt/lumargot/spiral_64/MRTRIX/102311/prediction.csv'
+	# command = [ "python3", predict_ocsvm, 
+	# 			"--folder_model", args.msma_checkpoint, 
+	# 			"--json", args.json, 
+	# 			"--csv", prediction_file,  
+	# 			"--analysis", dir_subject]
 
 	# print(command)
 	execute=subprocess.run(command)
@@ -157,8 +156,8 @@ if __name__ == "__main__":
 	nn_group = parser.add_argument_group('Neural Networks parameters')
 	nn_group.add_argument('--vgg_model', help='', required=True, type=str)
 	nn_group.add_argument('--classifier_model', help='', required=True, type=str)
-	nn_group.add_argument('--folder_models', help='Dirname containing model for each class', required=True)
-	nn_group.add_argument('--json', help='json file with the description of the input, generate with tfRecords.py from US-famli', default='None')
+	nn_group.add_argument('--msma_checkpoint', help='Dirname containing checkpoint of the model', required=True)
+	# nn_group.add_argument('--json', help='json file with the description of the input, generate with tfRecords.py from US-famli', default='None')
 	
 	out_group = parser.add_argument_group('Output')
 	out_group.add_argument('--out', help='Output dirname for the subject files generated', required=True)
