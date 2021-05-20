@@ -108,6 +108,7 @@ def main(args):
 							  "-minlength", str(args.minlength),
 							  "-cutoff", "0.08",
 							  "-fslgrad", bvec, bval,
+							  "-select", args.number_fibers,
 							  "-force"
 							  ]
 
