@@ -22,7 +22,7 @@ def main(args):
 
 	outlier_dir=os.path.join(DATA_DIR, "msma/")
 
-	predict_v2=os.path.join(us_famli_dir, "src/py/dl/predict_v2.py")
+	predict_v2=os.path.join(us_famli_dir, "predict.py")
 	flyby_script=os.path.join(fly_by_dir, "src/py/fly_by_features.py")
 	
 	# tractography_script=os.path.join(tractography_dir, "iFOD2.py" )
@@ -60,7 +60,8 @@ def main(args):
 				"--wm_mask", args.wm_mask,
 				"--fa", args.fa,
 				"--out_folder", dir_tractography, 
-				"--out_tracts", dir_tracts ]
+				"--out_tracts", dir_tracts 
+				'--number_fibers', args.number_fibers]
 	# print(command)
 	# execute=subprocess.run(command)
 
@@ -81,7 +82,7 @@ def main(args):
 	
 	command=[ "python3", flyby_script, 
 				  "--dir", dir_tracts, 
-				  "--out", dir_fibers, 
+				  "--out", dir_subject, 
 				  "--subject", subject_id,
 				  "--spiral", str(args.sample),
 				  "--scaling", str(values[0]),
@@ -148,6 +149,8 @@ if __name__ == "__main__":
 	in_group.add_argument('--brain_mask', type=str, help='whole-brain mask', default='None')
 	in_group.add_argument('--wm_mask', type=str, help='white matter mask', default='None')
 	in_group.add_argument('--fa', type=str, help='fa image', default='None')
+	in_group.add_argument('--number_fibers', type=int, help='number of fibers to extract', default=5000)
+
 
 	flyby_group = parser.add_argument_group('Fly-by-cnn parameters')
 	flyby_group.add_argument('--sample', help='Number of samples along the spherical spiral', type=str, default=64)
@@ -160,8 +163,8 @@ if __name__ == "__main__":
 	# nn_group.add_argument('--json', help='json file with the description of the input, generate with tfRecords.py from US-famli', default='None')
 	
 	out_group = parser.add_argument_group('Output')
-	out_group.add_argument('--out', help='Output dirname for the subject files generated', required=True)
-	
+	out_group.add_argument('--out_data', help='Output dirname for the subject files generated', required=True)
+	out_group.add_argument('--out_scripts', help='Output dirname for scripts', default="/app")
 
 	args = parser.parse_args()
 
