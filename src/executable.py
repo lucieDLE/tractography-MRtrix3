@@ -9,7 +9,7 @@ import re
 
 from iFOD2 import *
 from scaling import *
-from postprocess import *
+from postprocess_mask import *
 
 def main(args):
 	###
@@ -17,15 +17,18 @@ def main(args):
 	###	
 	DATA_DIR="/app/"
 
-	us_famli_dir=os.path.join(DATA_DIR, "US-famli/")
+	# us_famli_dir=os.path.join(DATA_DIR, "US-famli/")
 	fly_by_dir=os.path.join(DATA_DIR, "fly-by-cnn/")
-
+	mrtrix_tract_dir=os.path.join(DATA_DIR, "/work/lumargot/scripts/tractography-MRtrix3/src/")
 	outlier_dir=os.path.join(DATA_DIR, "msma/")
 
-	predict_v2=os.path.join(us_famli_dir, "predict.py")
 	flyby_script=os.path.join(fly_by_dir, "src/py/fly_by_features.py")
 	
-	# tractography_script=os.path.join(tractography_dir, "iFOD2.py" )
+	predict_v2=os.path.join(mrtrix_tract_dir, "predict_v2.py")
+	tractography_script=os.path.join(mrtrix_tract_dir, "iFOD2.py" )
+	scaling_script=os.path.join(mrtrix_tract_dir, "scaling.py" )
+	postprocess_script=os.path.join(mrtrix_tract_dir, "postprocess_mask.py" )
+	
 	# predict_ocsvm=os.path.join(outlier_dir, "predict_multiple_classes.py" )
 	# predict_score==os.path.join(outlier_dir, "evaluation.py" )   # ??? are train and predict in the same file ? maybe have to change something
 
@@ -33,7 +36,7 @@ def main(args):
 	# Create architecture
 	###	
 
-	dir_subject=os.path.normpath(args.out)
+	dir_subject=os.path.normpath(args.out_data)
 	subject_id = os.path.split(dir_subject)[1]
 
 	dir_tractography=os.path.join(dir_subject, "tractography")
@@ -52,7 +55,7 @@ def main(args):
 	else :
 		input_files = args.input[0]
 
-	command = [ "python3", "iFOD2.py",
+	command = [ "python3", tractography_script,
 				"--file_name", input_files,
 				"--bval", args.bval, 
 				"--bvec", args.bvec,
@@ -60,7 +63,7 @@ def main(args):
 				"--wm_mask", args.wm_mask,
 				"--fa", args.fa,
 				"--out_folder", dir_tractography, 
-				"--out_tracts", dir_tracts 
+				"--out_tracts", dir_tracts,
 				'--number_fibers', args.number_fibers]
 	# print(command)
 	# execute=subprocess.run(command)
@@ -69,7 +72,8 @@ def main(args):
 	# Fly-by-features 
 	###	
 
-	command=[ "python3", "scaling.py", "--nii", args.input[0] ]
+	command=[ "python3", scaling_script, "--nii", args.input[0] ]
+	print(command)
 	proc = execute=subprocess.run(command, stdout=subprocess.PIPE)
 
 	out=proc.stdout
@@ -77,8 +81,11 @@ def main(args):
 	list_split= re.split(' |\[|\]|\n', decode)
 	values=[]
 	for elt in list_split:
+		print(elt)
 		if (elt != ''):
 			values.append(float(elt))
+
+	print(values)
 	
 	command=[ "python3", flyby_script, 
 				  "--dir", dir_tracts, 
