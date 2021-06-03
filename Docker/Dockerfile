@@ -35,8 +35,7 @@ WORKDIR /app
 
 RUN git clone https://github.com/lucieDLE/fly-by-cnn.git
 RUN git clone https://github.com/ahsanMah/msma.git
-RUN git clone https://github.com/lucieDLE/tractography-mrtrix.git
-
+RUN git clone https://github.com/lucieDLE/tractography-MRtrix3.git
 
 
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.6/dist-packages/vtkmodules/
