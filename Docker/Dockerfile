@@ -1,5 +1,5 @@
 #FROM dcbia/fly-by-cnn:latest
-FROM msma:version1
+FROM tensorflow/tensorflow:2.4.1-gpu
 
 
 RUN apt-get update && apt-get install -y \
@@ -10,17 +10,26 @@ RUN apt-get update && apt-get install -y \
 	libegl1 \
 	wget
 
+
+
+RUN pip install itk sklearn pandas matplotlib nibabel
+RUN pip install tqdm tensorflow_datasets tensorflow_probability plotly seaborn
+
+RUN wget https://repo.continuum.io/archive/Anaconda3-5.0.1-Linux-x86_64.sh
+RUN bash Anaconda3-5.0.1-Linux-x86_64.sh -b
+RUN rm Anaconda3-5.0.1-Linux-x86_64.sh
+
+# Set path to conda
+ENV PATH /root/anaconda3/bin:$PATH
+
+RUN conda install -c mrtrix3 mrtrix3 
+
+
 WORKDIR /usr/local/lib/python3.6/dist-packages/
 
 RUN wget https://github.com/DCBIA-OrthoLab/fly-by-cnn/releases/download/2.0/vtk8.2.0.zip
 RUN	unzip vtk8.2.0.zip
 
-RUN pip install itk sklearn pandas matplotlib
-
-#RUN pip install tqdm tensorflow_datasets tensorflow_probability plotly seaborn tensorflow_addons
-RUN pip install nibabel
-
-#RUN conda install -c mrtrix3 mrtrix3 
 
 WORKDIR /app
 
