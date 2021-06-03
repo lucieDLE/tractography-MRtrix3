@@ -10,12 +10,13 @@ import itk
 import sys
 import pandas
 import csv
-import resample
+# import resample
 
 def image_read(filename, args):
 
   if(args.resample):
-    img = resample.Resample(filename, args)
+    print("resample missing file")
+  #   img = resample.Resample(filename, args)
   else:
     print("Reading:", filename)
     if(args.image_dimension == 1):
@@ -316,14 +317,14 @@ if __name__ == "__main__":
   input_group.add_argument('--csv_column', type=str, default='img', help='CSV column name (Only used if flag csv is used)')
   input_group.add_argument('--csv_root_path', type=str, default='', help='Replaces a root path directory to empty, this is use to recreate a directory structure in the output directory, otherwise, the output name will be the name in the csv (only if csv flag is used)')
 
-  resample_group = parser.add_argument_group('Resample parameters')
-  resample_group.add_argument('--resample', type=bool, default=False, help='Resample the image')
-  resample_group.add_argument('--size', nargs="+", type=int, help='Output size, -1 to leave unchanged', default=None)
-  resample_group.add_argument('--linear', type=bool, help='Use linear interpolation.', default=False)
-  resample_group.add_argument('--spacing', nargs="+", type=float, default=None, help='Use a pre defined spacing')
-  resample_group.add_argument('--fit_spacing', type=bool, help='Fit spacing to output', default=False)
-  resample_group.add_argument('--iso_spacing', type=bool, help='Same spacing for resampled output', default=False)
-  resample_group.add_argument('--rgb', type=bool, help='Use RGB type pixel', default=False)
+  # resample_group = parser.add_argument_group('Resample parameters')
+  # resample_group.add_argument('--resample', type=bool, default=False, help='Resample the image')
+  # resample_group.add_argument('--size', nargs="+", type=int, help='Output size, -1 to leave unchanged', default=None)
+  # resample_group.add_argument('--linear', type=bool, help='Use linear interpolation.', default=False)
+  # resample_group.add_argument('--spacing', nargs="+", type=float, default=None, help='Use a pre defined spacing')
+  # resample_group.add_argument('--fit_spacing', type=bool, help='Fit spacing to output', default=False)
+  # resample_group.add_argument('--iso_spacing', type=bool, help='Same spacing for resampled output', default=False)
+  # resample_group.add_argument('--rgb', type=bool, help='Use RGB type pixel', default=False)
 
   image_group = parser.add_argument_group('Image parameters')
   image_group.add_argument('--image_dimension', type=int, help='Image dimension', default=2)
